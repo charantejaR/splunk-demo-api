@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:audit-logger="http://www.mulesoft.org/schema/mule/audit-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/audit-logger http://www.mulesoft.org/schema/mule/audit-logger/current/mule-audit-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config"
+		doc:id="db3a03db-33a4-4b73-92d0-df7536502706">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
+	<audit-logger:config name="AuditLogger_Config"
+		doc:name="AuditLogger Config"
+		doc:id="f2a7052d-3f96-4b52-9c66-f0e2edc32933"
+		splunkHost="prd-p-xd47z.splunkcloud.com" splunkPort="8088"
+		splunkPath="services/collector"
+		splunkAuth="Splunk 5425210e-7006-4aa4-b015-c7650f42deab"
+		splunkReconnectionFrequency="3000" splunkReconnectionAttempts="3"
+		vmMessages="1" vmPersistent="false" send2Splunk="true" />
+	<flow name="splunk-demoFlow"
+		doc:id="093cd21b-126e-4df4-8a90-a3cb933d76bb">
+		<http:listener doc:name="Listener"
+			doc:id="8d6fbe90-0da4-466e-9581-67b294d8d183"
+			config-ref="HTTP_Listener_config" path="/splunk" />
+		<set-variable value="#[uuid()]" doc:name="Set Variable"
+			doc:id="7e0d4af3-8488-43d1-9168-3eaca6039314" variableName="uuid" />
+		<async doc:name="start"
+			doc:id="bf5cf8e8-bdc5-47cd-b03d-1876da604871">
+			<audit-logger:log-message
+				doc:name="Log message" doc:id="96161e95-e80d-40bf-b8cb-0d72b636ff8d"
+				config-ref="AuditLogger_Config" flowStep="start" inboundType="HTTP"
+				flowName="splunk-demoFlow" eventName="TestEvent" />
+		</async>
+		<ee:transform doc:name="Transform Message"
+			doc:id="0743dab7-3483-4455-9ae2-6df6be9258a4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<async doc:name="end"
+			doc:id="52c9a895-0e8c-4677-81f2-89f2c1427000">
+			<audit-logger:log-message
+				doc:name="Log message" doc:id="f37fe2d0-6fa2-476b-86ff-0ef92395fdae"
+				config-ref="AuditLogger_Config" flowStep="end" inboundType="HTTP"
+				flowName="splunk-demoFlow" eventName="TestEvent" />
+		</async>
+	</flow>
+</mule>
