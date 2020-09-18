@@ -1,76 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<Configuration>
-
+<Configuration status="INFO" name="cloudhub"
+	packages="com.mulesoft.ch.logging.appender,com.splunk.logging,org.apache.logging.log4j">
 	<Appenders>
-
-		<Console name="Console" target="SYSTEM_OUT">
-
+		<!-- <Log4J2CloudhubLogAppender name="CLOUDHUB"
+			addressProvider="com.mulesoft.ch.logging.DefaultAggregatorAddressProvider"
+			applicationContext="com.mulesoft.ch.logging.DefaultApplicationContext"
+			appendRetryIntervalMs="${sys:logging.appendRetryInterval}"
+			appendMaxAttempts="${sys:logging.appendMaxAttempts}"
+			batchSendIntervalMs="${sys:logging.batchSendInterval}"
+			batchMaxRecords="${sys:logging.batchMaxRecords}"
+			memBufferMaxSize="${sys:logging.memBufferMaxSize}"
+			journalMaxWriteBatchSize="${sys:logging.journalMaxBatchSize}"
+			journalMaxFileSize="${sys:logging.journalMaxFileSize}"
+			clientMaxPacketSize="${sys:logging.clientMaxPacketSize}"
+			clientConnectTimeoutMs="${sys:logging.clientConnectTimeout}"
+			clientSocketTimeoutMs="${sys:logging.clientSocketTimeout}"
+			serverAddressPollIntervalMs="${sys:logging.serverAddressPollInterval}"
+			serverHeartbeatSendIntervalMs="${sys:logging.serverHeartbeatSendIntervalMs}"
+			statisticsPrintIntervalMs="${sys:logging.statisticsPrintIntervalMs}">
 			<PatternLayout
-				pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n" />
-
-		</Console>
-
-		<Console name="ConsoleLogUtil" target="SYSTEM_OUT">
-
-			<PatternLayout pattern="%m%n" />
-
-		</Console>
-
-		<Http name="Splunk"
-			url="https://prd-p-xd47z.splunkcloud.com:8088/services/collector/raw">
-
-			<Property name="Authorization"
-				value="Splunk 5425210e-7006-4aa4-b015-c7650f42deab"></Property>
-
+				pattern="[%d{MM-dd HH:mm:ss}] %-5p %c{1} [%t]: %m%n" />
+		</Log4J2CloudhubLogAppender> -->
+		<SplunkHttp name="SPLUNK-CLOUD" source="mule-cloudhub-app"
+			url="http://localhost:8088/"
+			token="081fc05e-6b74-479e-bb96-95af197fb5f8" index="main"
+			disableCertificateValidation="true">
 			<PatternLayout
-				pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n"></PatternLayout>
-
-		</Http>
-
+				pattern="[%d{MM-dd HH:mm:ss}] %-5p %c{1} [%t]: %m%n" />
+		</SplunkHttp>
 	</Appenders>
-
 	<Loggers>
-
 		<AsyncLogger
-
 			name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor"
-
 			level="INFO" />
-
 		<AsyncLogger name="com.mulesoft.agent" level="INFO" />
-
-		<AsyncLogger name="org.mule.runtime.core.internal.logging"
-
-			additivity="false" level="INFO">
-
-			<AppenderRef ref="ConsoleLogUtil" />
-
-		</AsyncLogger>
-
 		<AsyncRoot level="INFO">
-
-			<AppenderRef ref="Console" />
-
-			<AppenderRef ref="Splunk" />
-
+			<AppenderRef ref="SPLUNK-CLOUD" />
+			<!-- <AppenderRef ref="CLOUDHUB" /> -->
 		</AsyncRoot>
-
-		<AsyncLogger name="com.mulesoft.mule.runtime.gw"
-			level="INFO" />
-
-		<AsyncLogger name="com.mulesoft.extension.policies"
-			level="INFO" />
-
-		<AsyncLogger name="com.mulesoft.extension.gateway"
-			level="INFO" />
-
-		<AsyncLogger name="com.mulesoft.analytics" level="INFO" />
-
+		<AsyncLogger name="com.gigaspaces" level="ERROR" />
+		<AsyncLogger name="com.j_spaces" level="ERROR" />
+		<AsyncLogger name="com.sun.jini" level="ERROR" />
+		<AsyncLogger name="net.jini" level="ERROR" />
+		<AsyncLogger name="org.apache" level="WARN" />
+		<AsyncLogger name="org.apache.cxf" level="WARN" />
+		<AsyncLogger name="org.springframework.beans.factory"
+			level="WARN" />
 		<AsyncLogger name="org.mule" level="INFO" />
-
 		<AsyncLogger name="com.mulesoft" level="INFO" />
-
+		<AsyncLogger name="org.jetel" level="WARN" />
+		<AsyncLogger name="Tracking" level="WARN" />
+		<AsyncLogger name="org.mule" level="INFO" />
+		<AsyncLogger name="com.mulesoft" level="INFO" />
+		<AsyncLogger name="org.mule.extensions.jms" level="INFO" />
+		<AsyncLogger
+			name="org.mule.service.http.impl.service.HttpMessageLogger"
+			level="INFO" />
+		<AsyncLogger name="org.mule.extension.salesforce"
+			level="INFO" />
+		<AsyncLogger name="org.mule.extension.ftp" level="INFO" />
+		<AsyncLogger name="org.mule.extension.sftp" level="INFO" />
+		<AsyncLogger name="com.mulesoft.extension.ftps"
+			level="INFO" />
+		<AsyncLogger name="org.mule.modules.sap" level="INFO" />
+		<AsyncLogger name="com.mulesoft.extension.mq" level="INFO" />
+		<AsyncLogger name="com.mulesoft.mq" level="INFO" />
+		<AsyncLogger name="org.mule.extension.db" level="INFO" />
+		<AsyncLogger name="httpclient.wire" level="DEBUG" />
+		<AsyncLogger name="org.mule.transport.email" level="DEBUG" />
 	</Loggers>
-
 </Configuration>

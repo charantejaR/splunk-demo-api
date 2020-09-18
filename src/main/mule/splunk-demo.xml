@@ -33,16 +33,27 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			doc:id="7e0d4af3-8488-43d1-9168-3eaca6039314" variableName="uuid" />
 		<async doc:name="start"
 			doc:id="bf5cf8e8-bdc5-47cd-b03d-1876da604871">
+			<ee:transform doc:name="Transform Message" doc:id="dd99292a-76be-4f10-a9f0-36656035fd4c" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="additionalKeys" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"testKey" : "tesValue"
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
 			<audit-logger:log-message
 				doc:name="Log message" doc:id="96161e95-e80d-40bf-b8cb-0d72b636ff8d"
-				config-ref="AuditLogger_Config" flowStep="start" inboundType="HTTP"
-				flowName="splunk-demoFlow" eventName="TestEvent" />
+				config-ref="AuditLogger_Config" flowStep="error" flowName="splunk-demoFlow" eventName="TestEvent" />
 		</async>
 		<ee:transform doc:name="Transform Message"
 			doc:id="0743dab7-3483-4455-9ae2-6df6be9258a4">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
 }]]></ee:set-payload>
